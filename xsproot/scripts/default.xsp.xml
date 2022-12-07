@@ -1,0 +1,188 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<xsp:script base="base.xsp.xml"
+        xmlns:xsp="uri:xsp"
+        xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+        xmlns:doc="uri:doc">
+    <xsp:assign name="scope" value="script" />
+
+    <xsp:sub name="pageTitle">XSP Home Page</xsp:sub>
+
+    <xsp:sub name="body">
+        <xsp:call href="#bodyNoNav?a=foo" />
+    </xsp:sub>
+
+    <xsp:sub name="content">
+        <p>The current language is ${locale.l}</p>
+
+        <xsp:xml name="products" cacheKey="product${locale.l}" cacheDuration="00:10:00">
+            <xsp:if test="${locale.l != 'en'}">
+                <localized><xsp:query src="/data/files/content/${locale.l}/*.xml" /></localized>
+            </xsp:if>
+            <default><xsp:query src="/data/files/content/en/*.xml" /></default>
+            <xsp:query src="/data/files/content/facts.xml" />
+        </xsp:xml>
+
+        <xsp:xml name="combined" cacheKey="combined${locale.l}" cacheDuration="00:10:00">
+            <xsp:query src="#products">
+                <xsl:param name="dateTime" />
+                <xsl:template match="/">
+                    <products>
+                        <xsl:attribute name="time">
+                            <xsl:value-of  select="$dateTime"/>
+                        </xsl:attribute>
+                        <xsl:apply-templates select="*/default/*/*/*">
+                            <xsl:sort select="@id" />
+                        </xsl:apply-templates>
+                    </products>
+                </xsl:template>
+
+                <xsl:template match="product[ancestor::default]">
+                    <xsl:choose>
+                        <xsl:when test="/*/localized/*/doc:file/product[@id = current()/@id]">
+                            <xsl:apply-templates select="/*/localized/*/doc:file/product[@id = current()/@id]" mode="copy" />
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:apply-templates select="current()" mode="copy" />
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:template>
+
+                <xsl:template match="product" mode="copy">
+                    <xsl:element name="product">
+                        <xsl:copy-of select="@*" />
+                        <xsl:attribute name="sourceLastModified"><xsl:value-of select="ancestor::doc:file/@lastModified" /></xsl:attribute>
+                        <xsl:copy-of select="*" />
+                        <xsl:element name="facts">
+                            <xsl:copy-of select="/*/facts/fact[@id = current()/@id]/@*" />
+                        </xsl:element>
+                    </xsl:element>
+                </xsl:template>
+            </xsp:query>
+        </xsp:xml>
+
+        <xsp:query src="#combined" />
+        <!--<rawData><xsp:query src="#products" /></rawData>-->
+    </xsp:sub>
+
+
+    <!-- ignore this -->
+    <xsp:sub name="mainX">
+        <main name="foo" scope="${scope}">
+            <holyMoly />
+            <xsp:call href="#implementedInBase" />
+            <xsp:call href="#foo?first=Steve&amp;last=Fish&amp;scope=argument" />
+            <finally scope="${scope}" />
+        </main>
+    </xsp:sub>
+
+    <xsp:sub name="withOverride">
+        <withOverride style="${style}" file="${script.shortName}">default</withOverride>
+        <xsp:call href="..#withOverride?style=explicit" />
+    </xsp:sub>
+
+    <xsp:sub name="foo">
+        <xsp:assign name="fullName" value="${last}, ${first}" />
+
+        <xsp:xml name="testData">
+            <foo a="1">This is #1</foo>
+            <foo a="2">This is #2</foo>
+            <foo a="3">This is #3</foo>
+            <foo a="4">This is #4</foo>
+            <foo a="5">This is #5</foo>
+            <foo a="6">This is #6</foo>
+            <foo a="7">This is #7</foo>
+            <foo a="8">This is #8</foo>
+            <foo a="9">This is #9</foo>
+            <foo a="10">This is #10</foo>
+            <foo a="11">This is #11</foo>
+            <foo a="12">This is #12</foo>
+        </xsp:xml>
+
+        <foo scope="${scope}" />
+        I am ${fullName}!
+
+        <testData>
+            <doc:files>
+                <rawFiles><xsp:query src="/data/files/*.xml" /></rawFiles>
+                <xsp:query src="/data/files/*.xml">
+                    <xsl:template match="/">
+                        <xsl:for-each select="//content">
+                            <content><xsl:copy-of select="@from" /><xsl:attribute name="name"><xsl:value-of select="ancestor::doc:file/@name" />.xml</xsl:attribute></content>
+                        </xsl:for-each>                  
+                    </xsl:template>
+                </xsp:query>
+            </doc:files>
+
+
+            <x>
+                <xsp:query src="#testData">
+                    <xsl:template match="/">
+                        <xsl:value-of select="count(*/foo)"/>
+                    </xsl:template>
+                </xsp:query>
+            </x>
+            <y>
+                <xsp:query src="#testData" select="/*/foo[@a='2']">
+                    <xsl:template match="foo">
+                        <xsl:value-of select="@a" />
+                    </xsl:template>
+                </xsp:query>
+            </y>
+            <z><xsp:query src="#testData" /></z>
+            <zz>
+                <xsp:query src="#testData" args="query.page query.count">
+                    <xsl:param name="page" select="'1'" />
+                    <xsl:param name="count" select="'10'" />
+                    <xsl:param name="firstIndex" select="1 + ($count * ($page - 1))" />
+                    <xsl:param name="lastIndex" select="$firstIndex + $count - 1" />
+                    <xsl:template match="/">
+                        [<xsl:value-of select="$page" />, <xsl:value-of select="$firstIndex" />-<xsl:value-of select="$lastIndex" />]
+                        <xsl:apply-templates select="*/foo[(position() &gt;= $firstIndex) and (position() &lt;= $lastIndex)]" />
+                    </xsl:template>
+                    <xsl:template match="foo">
+                        <p><xsl:value-of select="." /></p>
+                    </xsl:template>
+                </xsp:query>
+            </zz>
+        </testData>
+
+        <xsp:if test="${last == 'Smith'}">the name is Smith</xsp:if>
+        <xsp:if test="${last != 'Smith'}">the name is not Smith</xsp:if>
+        <xsp:if test="${last == 'Saxon'}">the name is Saxon</xsp:if>
+
+        <xsp:choose>
+            <xsp:when test="${last == 'Smith'}">the choose name is Smith</xsp:when>
+            <xsp:when test="${last == 'Saxon'}">the choose name is Saxon</xsp:when>
+            <xsp:otherwise>the choose name is actually ${last}</xsp:otherwise>
+        </xsp:choose>
+
+        <xsp:call href="#temp" />
+        <xsp:call href="#temp" />
+        <xsp:call href="#arg-test" />
+    </xsp:sub>
+
+    <xsp:sub name="arg-test">
+        <xsp:assign name="scope" value="sub" />
+        <arg-test scope="${scope}" />
+    </xsp:sub>
+
+    <xsp:sub name="temp">
+        <xsp:query src="/data/test.xml">
+            <xsl:template match="/">
+                <foo><xsl:copy-of select="node()" /></foo>
+            </xsl:template>
+
+            <xsp:call href="#core-templates" />
+        </xsp:query>
+    </xsp:sub>
+
+    <xsp:sub name="core-templates">
+        <xsl:template match="text()">
+            <xsl:value-of select="." />
+        </xsl:template>
+
+        <xsl:template match="*">
+            <xsl:apply-templates />
+        </xsl:template>
+    </xsp:sub>
+</xsp:script>

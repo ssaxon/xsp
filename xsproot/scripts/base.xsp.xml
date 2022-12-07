@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<xsp:script 
+        xmlns:xsp="uri:xsp"
+        xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+        xmlns:doc="uri:doc">
+
+    <xsp:assign name="in-base" value="true" />
+
+    <xsp:sub name="main">
+        <doc:title><xsp:call href="#pageTitle" /></doc:title>
+        <xsp:call href="#header" />
+        <xsp:call href="#body" />
+        <xsp:call href="#footer" />
+    </xsp:sub>
+
+    <xsp:sub name="pageTitle">XSP Demo Page</xsp:sub>
+
+    <xsp:sub name="header">
+        <doc:header />
+    </xsp:sub>
+
+    <xsp:sub name="body">
+        <doc:body>
+            <doc:leftnav>
+                <xsp:call href="#leftnav" />
+            </doc:leftnav>
+            <doc:content>
+                <xsp:call href="#content" />
+            </doc:content>
+        </doc:body>
+    </xsp:sub>
+
+    <xsp:sub name="bodyNoNav">
+        <doc:body>
+            <doc:content>
+                <doc:para>${a}</doc:para>
+                <xsp:call href="#content" />
+            </doc:content>
+        </doc:body>
+    </xsp:sub>
+
+    <xsp:sub name="leftnav">
+        <!-- leftnav -->
+    </xsp:sub>
+
+    <xsp:sub name="content">
+        <!-- content -->
+    </xsp:sub>
+
+    <xsp:sub name="footer">
+        <doc:footer />
+    </xsp:sub>
+
+
+
+
+    <xsp:sub name="implementedInBase">
+        <implementedInBase>
+            <xsp:call href="#withOverride?style=implicit" />
+        </implementedInBase>
+    </xsp:sub>
+
+    <xsp:sub name="withOverride">
+        <withOverride style="${style}" file="${script.shortName}">base</withOverride>
+    </xsp:sub>
+
+</xsp:script>

@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<product id="book" title="Livre">
+    <description>
+        Un livre est un document écrit formant unité et conçu comme tel, composé de pages
+        reliées les unes aux autres. Il a pour fonction d'être un support de l'écriture,
+        permettant la diffusion et la conservation de textes de nature variée.
+    </description>
+</product>
