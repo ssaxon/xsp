@@ -6,8 +6,7 @@ using XSP.Web;
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
-XspEngine engine = new XspEngine();
-app.UseMiddleware<XspHandler>(engine);
+app.UseMiddleware<XspHandler>(new XspEngine());
 
 DefaultFilesOptions defaultFilesOptions = new DefaultFilesOptions();
 defaultFilesOptions.DefaultFileNames.Clear();

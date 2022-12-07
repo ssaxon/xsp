@@ -7,6 +7,11 @@
     <xsp:assign name="in-base" value="true" />
 
     <xsp:sub name="main">
+        <Name>${script.name}</Name>
+		<Path>${script.path}</Path>
+		<ShortName>${script.shortName}</ShortName>
+		<ShortPath>${script.shortPath}</ShortPath>
+
         <doc:title><xsp:call href="#pageTitle" /></doc:title>
         <xsp:call href="#header" />
         <xsp:call href="#body" />
