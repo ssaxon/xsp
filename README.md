@@ -240,9 +240,11 @@ The `select` argument defines an XPath expression that is used to filter the dat
 <xsp:query src="/data/files/content/facts.xml" select="//fact[@id='pencil']" />
 ```
 
-The `query` statement may optionally contain an XSL transformation, which is itself run through the XSP processor, which could allow you to dynamically generate the XSL transform (though this is not recommended!). You can also pass variables into the transformation as parameters, which the XSL transform can then leverage. If you pass in `query` arguments, only the specific query argument's name is used.
+The `query` statement may optionally contain an XSL transformation, which is itself run through the XSP processor, which could allow you to dynamically generate the XSL transform (though this is not recommended!). Bear in mind that the XSL is only parsed when the script is being parsed, so if you embed queries or use expression syntax, that will only be processed one time.
 
-In the example below, we enable paging through a dataset using variables from the query string ...
+With that said, you can pass variables into the transformation as parameters, which the XSL transform can then leverage. If you pass in `query` arguments, only the specific query argument's name is used.
+
+In the example below, we enable paging through a dataset using variables from the query string ... The `$page` and `$count` syntax here is XSL querying the `param` values with those name — there is no XSP magic happening here.
 
 ```xml
 <xsp:query src="#testData" args="query.page query.count">
