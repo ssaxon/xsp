@@ -3,7 +3,7 @@
 This is an implementation of the XSP scripting engine, that deliberately avoids some of the poor design choices in the original which enables us to provide significantly better performance.
 
 > #### Poor design choices?
-> One example of a poor design choice in the original XSP script engine was the ability to assign global variables inside of a subroutine. What this meant was that you could have code generating an XSL transform, or even just performing a query, that depended on a global variable that could change at any time. By removing the ability to set global variables, we can cache content in a reliable way and avoid significant reprocessing.
+> One example of a poor design choice in the original XSP script engine from 1998 was the ability to assign global variables inside of a subroutine. What this meant was that you could have code generating an XSL transform, or even just performing a query, that depended on a global variable that could change at any time. By removing the ability to set global variables, we can cache content in a reliable way and avoid significant reprocessing.
 
 ## What is XSP?
 
@@ -244,7 +244,7 @@ The `query` statement may optionally contain an XSL transformation, which is its
 
 With that said, you can pass variables into the transformation as parameters, which the XSL transform can then leverage. If you pass in `query` arguments, only the specific query argument's name is used.
 
-In the example below, we enable paging through a dataset using variables from the query string ... The `$page` and `$count` syntax here is XSL querying the `param` values with those name — there is no XSP magic happening here.
+In the example below, we enable paging through a dataset using variables from the query string ... The `$page` and `$count` syntax here is XSL querying the `param` values with those names — there is no XSP magic happening here.
 
 ```xml
 <xsp:query src="#testData" args="query.page query.count">
@@ -264,7 +264,11 @@ In the example below, we enable paging through a dataset using variables from th
 </xsp:query>
 ```
 
-## Expression language
+---
+
+## XSP Expression language
+
+The expression language in this implementation is the major difference between this and the XSP implementation from 1998.
 
 The `${...}` expression language in XSP is similar to ones found in Java and JavaScript, with a few embellishments around null handling, and optional values/properties.
 
