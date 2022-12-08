@@ -1,6 +1,6 @@
 # XSP Script Engine
 
-This is an implementation of the XSP scripting engine, that deliberately avoids some of the poor design choices in the original which enables us to provide significantly better performance.
+This is an implementation of the XSP scripting engine, implemented using ASP.NET Core in .NET 7, that deliberately avoids some of the poor design choices in the original which enables us to provide significantly better performance.
 
 > #### Poor design choices?
 > One example of a poor design choice in the original XSP script engine from 1998 was the ability to assign global variables inside of a subroutine. What this meant was that you could have code generating an XSL transform, or even just performing a query, that depended on a global variable that could change at any time. By removing the ability to set global variables, we can cache content in a reliable way and avoid significant reprocessing.
