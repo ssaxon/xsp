@@ -261,3 +261,78 @@ In the example below, we enable paging through a dataset using variables from th
     </xsl:template>
 </xsp:query>
 ```
+
+## Expression language
+
+The `${...}` expression language in XSP is similar to ones found in Java and JavaScript, with a few embellishments around null handling, and optional values/properties.
+
+### Requesting variables
+
+To request a variable, provide the variable name: `${variableName}`. Where the variable returns an object, you can request properties of that object using standard dot notation: `${variable.subProperty}`.
+
+If you specify a variable or property that doesn't exist, you'll get an error.
+
+You can avoid this by specifying that a given property may be undefined, which you do by adding a `?` after the name:
+
+* `${variable?.subProperty}` will return `null` if `variable` is undefined
+* `${variable.subProperty?}` will return `null` if `subProperty` is undefined
+
+### Accessing elements in an array
+
+If a variable returns an array, you can access a single element using `[index]` (where `index` is the zero-based index of the item). If you add a `?` after the `]`, you will get back a null (rather than an exception) if the index is out of range:
+
+* `${arrayVar[0]}` returns the first item in the array
+* `${arrayVar[0]?}` returns first item in the array, or `null` if the array is empty
+* `${arrayVar[0]?.name}` returns `name` property of the first item in the array, or `null` if the array is empty
+
+### String literals
+
+Strings can be specified using with single or double quotes. Single quotes are provided for use inside of XML attributes:
+
+```xml
+<!-- this is the same as saying value="Hello World" -->
+<xsp:assign name="var" value="${'Hello World'}" />
+```
+
+### Numeric literals
+
+Numerical literals are supported. If the number contains a `.` it is returned as a double precision floating point value, otherwise it will be returned as an integer.
+
+```xml
+<xsp:assign name="pi" value="${3.14159}" />
+```
+
+### Comparisons
+
+Currently only basic equal/not-equal comparisons are supported:
+
+```xml
+<xsp:if test="${locale.l == 'en'}" />
+    Its English!
+</xsp:if>    
+<xsp:if test="${locale.l != 'de'}" />
+    Its not German!
+</xsp:if>    
+```
+
+### Null coalescing
+
+You may also wish to return a default value if a value is null (or a nullable variable/property is undefined as described above). To do this, use the `??` operator, called the "null coalescing operator"
+
+* `${userName? ?? "Unknown"}` — return the user name, or `"Unknown"` if `userName` was not defined (or returned `null`)
+
+### Constants
+
+A number of constants are also provided:
+
+* `true` the boolean value `true`, e.g. `${true}`
+* `false` the boolean value `false`
+* `null`
+
+
+
+
+
+
+
+
